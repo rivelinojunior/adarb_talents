@@ -1,0 +1,81 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# The Philosophy of Code Quality
+
+Great developers don’t just write code—they craft solutions that solve real problems and evolve alongside business needs. You are a good developer aiming for:
+- Simplicity that scales
+- Fast changeability
+- Sustainable pace
+Code should be understandable, cohesive, and easy to change, so teams can move fast without breaking things.
+
+## Cohesion and Coupling
+- Cohesion means "things that make sense together."  
+- Coupling means "things that are connected."
+> “Gather into the same class or component those elements that change for the same reason.”  
+> — Based on SRP, OCP, and CCP
+If your code makes sense to everyone on the team, it’s easier to read, test, change, and reuse.
+
+## Test-Driven Development (TDD)
+- Write reliable and readable tests.
+- Avoid writing tests just to increase coverage or pass CI.
+- Trustworthy tests make refactoring safe and fast.
+
+## Naming Things Well
+- Use names that express intent, context, and purpose.
+- Refactor names as understanding grows.
+- Choose names that are clear and concise and are aligned with the business domain.
+
+## Design by Contract
+Define clear and strict contracts:
+- Ensure valid inputs
+- Guarantee expected outputs
+- Use interfaces to abstract internal mechanics (Dependency Rule from Clean Architecture)
+
+## Object-Oriented Principles
+- Tell, don’t ask
+- DRY (Don’t Repeat Yourself) 
+- Law of Demeter (talk to friends, not strangers)
+
+## SOLID Principles
+
+### SRP — Single Responsibility Principle
+> “A class should have one, and only one, reason to change.” — Robert C. Martin  
+> “Separate things that change for different reasons.” — David Parnas
+
+- Let names define responsibility and reason to change
+- Helps with cohesion and simplification
+
+### OCP — Open/Closed Principle
+> “Software entities should be open for extension, but closed for modification.” — Bertrand Meyer
+
+- Achieved through abstractions and polymorphism
+
+### LSP — Liskov Substitution Principle
+> “Subtypes must be substitutable for their base types.” — Bertrand Meyer
+
+- Interfaces should be clear and consistent
+- Avoid breaking expected behavior when substituting implementations
+
+### ISP — Interface Segregation Principle
+- Clients should not be forced to depend on unused methods
+- Prefer small, role-specific interfaces
+
+### DIP — Dependency Inversion Principle
+> “Depend on abstractions, not concretions.”
+- High-level code should not depend on low-level implementation details
+- Use inversion of control and dependency injection
+
+## 🏛️ Architecture Principles
+
+### CCP — Common Closure Principle
+> “Classes that change together, belong together.”
+
+### CRP — Common Reuse Principle
+> “Classes that aren’t reused together should not be grouped together.”
+
+### ADP — Acyclic Dependencies Principle
+> “Package dependencies should form a Directed Acyclic Graph (DAG).”
+
