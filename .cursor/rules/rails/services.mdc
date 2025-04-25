@@ -1,0 +1,115 @@
+---
+description: Guidelines for integrating and using the `solid-process` gem in Rails services: advanced features 
+globs: app/models/**/*.rb
+alwaysApply: false
+---
+
+# Introduction
+
+`solid-process` provides a structured way to encapsulate business logic as composable, testable process objects. Each process subclasses `Solid::Process`, declares its inputs and dependencies, and implements a `call` method that orchestrates steps to produce a `Success` or `Failure` output.
+
+## Namespace Convention
+
+Process classes should live in the same namespace as the models they operate on and be located in matching directories. For example, for a `User` model, the `User::Registration` process would be defined in `app/services/user/registration.rb`.
+
+## 2. Dependencies
+
+Use the `deps` block to inject collaborators, enabling decoupling and easier testing:
+```ruby
+class User::Registration < Solid::Process
+  deps do
+    attribute :mailer, default: UserMailer
+    attribute :token_creation, default: User::Token::Creation
+    attribute :task_list_creation, default: Account::Task::List::Creation
+  end
+```
+- Default attributes allow you to stub or replace dependencies in specs.
+
+## 3. Input Normalization & Validation
+
+Within the `input` block you can normalize and validate inputs:
+```ruby
+  input do
+    attribute :email,                   :string
+    attribute :password,                :string
+    attribute :password_confirmation,   :string
+
+    # Normalize before validation
+    before_validation do
+      self.email = email.downcase.strip
+    end
+
+    # Declarative validations
+    with_options presence: true do
+      validates :email,    format: User::Email::REGEXP
+      validates :password, confirmation: true,
+                          length: { minimum: User::Password::MINIMUM_LENGTH }
+    end
+  end
+```
+- `before_validation` hooks let you clean or transform inputs.
+- Use `with_options` to group related ActiveModel validations.
+
+## 4. Implementing `call` & Nested Processes
+
+The `call(attributes)` method orchestrates nested steps using `Given` and chaining:
+```ruby
+  def call(attributes)
+    rollback_on_failure {
+      Given(attributes)
+        .and_then(:check_if_email_is_taken)
+        .and_then(:create_user)
+        .and_then(:create_user_account)
+        .and_then(:create_user_inbox)
+        .and_then(:create_user_token)
+    }
+    .and_then(:send_email_confirmation)
+    .and_expose(:user_registered, [:user])
+  end
+```
+- `rollback_on_failure` wraps the initial sequence so any `Failure` undoes DB side effects.
+- `.and_then(:step_method)` invokes private instance methods in order.
+- `.and_expose(:event, [keys])` emits a final event and payload.
+
+### Private Step Methods
+
+Define each step as a private method with keyword args matching inputs or prior outputs:
+```ruby
+  private
+
+  def check_if_email_is_taken(email:, **)
+    input.errors.add(:email, "has already been taken") if User.exists?(email:)
+    input.errors.any? ? Failure(:invalid_input, input: input) : Continue()
+  end
+
+  def create_user(email:, password:, password_confirmation:, **)
+    user = User.create(email: email, password: password, password_confirmation: password_confirmation)
+    if user.persisted?
+      Continue(user: user)
+    else
+      input.errors.merge!(user.errors)
+      Failure(:invalid_input, input: input)
+    end
+  end
+
+  # ... other steps like create_user_account, create_user_inbox, create_user_token ...
+```
+- Each method returns `Continue(...)` or `Failure(...)` to control flow.
+
+## 5. Conceptual Overview
+
+### What is a Process?
+A process is a defined sequence of steps or actions to achieve a specific outcome; in code, it represents a workflow that transforms inputs into outputs with clear branching on success or failure.
+
+### What is `Solid::Process`?
+A base class that acts as an orchestrator: it knows the order of steps, handles input validation, and ensures extensibility and testability of complex business logic.
+
+## 6. Emergent Design & The Mantra
+
+Processes embrace **emergent design**: you start with the simplest implementation and evolve it as requirements and understanding grow. Follow this mantra:
+1. **Make it Work**: write minimal code to satisfy the initial behavior.
+2. **Make it Better**: refactor for clarity, extraction, and reuse.
+3. **Make it Even Better**: apply advanced features (`deps`, rollbacks, events) only when real needs arise.
+
+This cycle keeps your business logic aligned with evolving requirements and avoids overengineering.
+

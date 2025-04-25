@@ -1,0 +1,123 @@
+---
+description: Guidelines for Rails models: naming, associations, enums, validations, scopes, callbacks, and methods 
+globs: app/models/**/*.rb
+alwaysApply: false
+---
+
+# File Layout & Naming
+- File names must use snake_case matching the class name (e.g., `app/models/user_profile.rb` defines `class UserProfile`).
+- Order code blocks as: constants, associations, enums, validations, scopes, callbacks, public methods, protected/private methods.
+
+# Associations
+- Declare `has_many`, `belongs_to`, `has_one`, `has_and_belongs_to_many` at the top of the class.
+- Use explicit `inverse_of` when needed to prevent N+1 queries.
+- Specify `dependent:` strategy (`:destroy`, `:nullify`) to avoid orphan data.
+
+# Enums & Constants
+- Define enums immediately after associations:
+  ```ruby
+  enum status: { draft: 0, published: 1, archived: 2 }
+  ```
+- Use constants for magic values:
+  ```ruby
+  MAX_TITLE_LENGTH = 255
+  validates :title, length: { maximum: MAX_TITLE_LENGTH }
+  ```
+
+# Validations
+- Group related validations with `with_options` for DRYness:
+  ```ruby
+  with_options presence: true do
+    validates :name
+    validates :email, uniqueness: true
+  end
+  ```
+- Use built-in validators (`presence`, `uniqueness`, `numericality`, `format`).
+- For complex conditions, extract to `validate :custom_validation_method` and define the method below.
+
+# Scopes & Queries
+- Prefer scopes over class methods for query chaining:
+  ```ruby
+  scope :recent, -> { order(created_at: :desc) }
+  ```
+- Use descriptive scope names; avoid ambiguous ones like `scope :active, -> { where(active: true) }` unless context is clear.
+- Combine chained scopes for complex queries; keep each scope focused on a single purpose.
+
+# Query Methods
+- **`joins`**: Use `joins(:association)` when you need to filter or sort by columns in related tables without loading associated records. It performs an SQL INNER JOIN and returns an ActiveRecord::Relation.
+  ```ruby
+  User.joins(:orders).where(orders: { status: 'paid' })
+  ```
+- **`includes`**: Use `includes(:association)` to eager load associations and prevent N+1 queries when you will access related records. Depending on usage, it issues LEFT OUTER JOINs or separate SELECTs.
+  ```ruby
+  users = User.includes(:profile)
+  users.each { |u| puts u.profile.bio }
+  ```
+- **`pluck`**: Use `pluck(:column)` when you only need an array of values for one or more columns and do not require ActiveRecord objects. It issues a SELECT of the specified columns directly.
+  ```ruby
+  emails = User.where(active: true).pluck(:email)
+  ```
+- **`select`**: Use `select(:col1, :col2)` when you want to retrieve ActiveRecord objects with only specific attributes loaded. It returns AR models with only those columns populated.
+  ```ruby
+  lightweight_users = User.select(:id, :name)
+  ```
+- **Choosing between `pluck` and `select`**:
+  - Use `pluck` for raw column values to reduce memory overhead.
+  - Use `select` when you need model instances for further chaining or method calls.
+- Avoid unnecessary eager loading (`includes`) when you do not access associations, and avoid `joins` when you need associated object instances.
+- **Always select only the columns you will actually use** to minimize memory usage and improve performance.
+
+# Callbacks (`includes`) when you do not access associations, and avoid `joins` when you need associated object instances.
+
+# Callbacks# Callbacks
+- Avoid heavy logic in callbacks; prefer service objects for business logic.
+- If using callbacks, keep them minimal and well-named:
+  ```ruby
+  after_create :enqueue_welcome_email
+  private
+  def enqueue_welcome_email
+    UserMailer.welcome_email(self).deliver_later
+  end
+  ```
+
+# Instance & Class Methods
+- Keep public API methods grouped together and document them with YARD tags (`#`) above each method.
+- Place private helper methods under a `private` section at the bottom.
+- Avoid long methods; extract to concerns or Service Objects when methods exceed ~10 lines.
+- **All business logic should be moved to dedicated Service Objects** (e.g., `app/services/*Service`) to keep models thin and focused on persistence.
+- **Model methods should be limited to attribute accessors, simple computed attributes, or formatting helpers; delegate all other logic to services.**
+
+# Testing & Coverage (Minitest)
+- Use Minitest to test models under `test/models/**/*_test.rb`.
+- Ensure every public method, association, enum, validation, scope, and callback has a corresponding test.
+- Use test guidelines [tests.mdc](mdc:.cursor/rules/rails/tests.mdc)
+
+
+# Example Model Test (`test/models/order_test.rb`)
+```ruby
+require 'test_helper'
+
+class OrderTest < ActiveSupport::TestCase
+  def test_total_returns_money_object
+    # Arrange (fixture and inline update)
+    orders(:one).update!(total_cents: 1500, currency: 'USD')
+
+    # Act
+    result = orders(:one).total
+
+    # Assert
+    assert_instance_of Money, result
+    assert_equal 15.00, result.to_f
+  end
+
+  def test_status_enum_and_scope
+    # Arrange
+    order = orders(:two)
+
+    # Act & Assert
+    assert_predicate order, :pending?
+    assert_includes Order.paid, orders(:paid)
+  end
+end
+```
+

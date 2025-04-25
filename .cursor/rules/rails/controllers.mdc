@@ -1,0 +1,163 @@
+---
+description: Guidelines for Rails controllers: naming, structure, strong parameters, callbacks, service delegation, and responses 
+globs: app/controllers/**/*.rb
+alwaysApply: false
+---
+
+# File Layout & Naming
+- File names must match the controller class in snake_case (e.g., `app/controllers/users_controller.rb` defines `class UsersController`).
+- Order code in this sequence:
+  1. `class` declaration  
+  2. Constants  
+  3. `before_action` / `skip_before_action`  
+  4. Public actions (grouped by RESTful verbs: index, show, new, create, edit, update, destroy)  
+  5. Private methods (strong parameter methods, helpers)  
+  6. `rescue_from` handlers at the bottom, if any
+
+# RESTful Actions
+- Follow the seven standard actions (`index`, `show`, `new`, `create`, `edit`, `update`, `destroy`).  
+- For custom behaviors (`approve`, `cancel`, etc.), **extract into separate controllers** that map to HTTP verbs:
+  - Create controllers like `ApprovalsController`, `CancellationsController`, etc., under the same namespace.  
+  - Use RESTful routes; e.g.:  
+    ```ruby
+    # config/routes.rb
+    resources :users do
+      resources :approvals, only: :create
+      post :cancel, on: :member, to: 'cancellations#create'
+    end
+    ```
+  
+- This approach keeps each controller focused and leverages standard HTTP verbs for side-effects.
+
+# Strong Parameters
+- **Rails 8+**: use `params.expect` to require, permit, and type-check in one step:
+  ```ruby
+  def user_params
+    params.expect(user: [:name, :email, role_id: Integer])
+  end
+  ```
+  - Raises `ActionController::ParameterMissing` or `ActionController::ExpectedParameterMissing` on mismatch.  
+  - For nested arrays/hashes, mirror the expected shape:
+    ```ruby
+    params.expect(posts: [[:id, :title]])
+    ```
+- **Fallback (Rails <8)**: use `require` + `permit`:
+  ```ruby
+  def legacy_params
+    params.require(:user).permit(:name, :email)
+  end
+  ```
+- Never access `params` directly in actions.
+
+# Before Actions & Filters
+- Use `before_action` to set context and authenticate:
+  ```ruby
+  before_action :set_current_user
+  before_action :set_user, only: %i[show edit update destroy]
+  before_action :authenticate_user!
+  ```
+- Set the current user via `Current`:
+  ```ruby
+  private
+
+  def set_current_user
+    Current.user = current_user
+  end
+  ```
+- Load resources explicitly:
+  ```ruby
+  def set_user
+    @user = User.find(params[:id])
+  end
+  ```
+- Skip filters explicitly when needed:
+  ```ruby
+  skip_before_action :verify_authenticity_token, only: :webhook
+  ```
+
+# Service Delegation
+- Controllers should only:
+  1. Call service objects for business logic using Ruby 3 pattern matching:
+     ```ruby
+     def create
+       case PostCreateService.call(user: Current.user, params: post_params)
+       in Success(post:)
+         redirect_to post, notice: 'Post created.'
+       in Failure(errors:)
+         render :new, locals: { errors: errors }, status: :unprocessable_entity
+       end
+     end
+     ```
+  2. Pass data to views via `locals` (avoid instance variables):
+     ```ruby
+     posts = PostListService.call
+     render :index, locals: { posts: posts }
+     ```
+- **All business logic must reside in service objects** under `app/services/`.
+
+# Responses & Error Handling
+- Use `respond_to` for multiple formats:
+  ```ruby
+  respond_to do |format|
+    format.html
+    format.json { render json: @user }
+  end
+  ```
+- Handle exceptions with `rescue_from` in `ApplicationController` or specific controllers:
+  ```ruby
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+
+  private
+  def render_not_found
+    render file: 'public/404.html', status: :not_found
+  end
+  ```
+- Ensure every branch either `render`s or `redirect_to`.
+
+# Testing & Coverage (Minitest)
+- Write controller tests in `test/controllers/**/*_test.rb`:
+  - Stub external services.
+  - Assert response status, rendered templates, or JSON.
+- Follow AAA (Arrange-Act-Assert) with self-contained tests.
+- Use `assert_pattern` and other `assert_*` methods according to the test guidelines [tests.mdc](mdc:.cursor/rules/rails/tests.mdc).
+
+# Example: `app/controllers/posts_controller.rb`
+```ruby
+class PostsController < ApplicationController
+  before_action :set_current_user
+  before_action :set_post, only: %i[show edit update destroy]
+  before_action :authenticate_user!
+
+  def index
+    posts = Post.recent
+    respond_to do |format|
+      format.html
+      format.json { render json: posts }
+    end
+  end
+
+  def create
+    case PostCreateService.call(user: Current.user, params: post_params)
+    in Success(post:)
+      redirect_to post, notice: 'Post created.'
+    in Failure(errors:)
+      render :new, locals: { errors: errors }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def set_current_user
+    Current.user = current_user
+  end
+
+  def set_post
+    @post = Post.find(params[:id])
+  end
+
+  def post_params
+    params.expect(post: [:title, :body])
+  end
+end
+```
+

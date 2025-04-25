@@ -1,0 +1,129 @@
+---
+description: Guidelines for Rails Jobs with Solid Queue: idempotency, transactional enqueuing, argument simplicity, error handling, concurrency, logging, and testing 
+globs: app/jobs/**/*.rb
+alwaysApply: false
+---
+# Queue Adapter Configuration
+- Ensure Solid Queue is enabled as the Active Job adapter:
+  ```ruby
+  # config/application.rb
+  config.active_job.queue_adapter = :solid_queue
+  ```
+
+# Transactional Enqueuing
+- Enqueue jobs only after the surrounding database transaction commits:
+  ```ruby
+  after_commit { MyJob.perform_later(record.id) }
+  ```
+  This prevents jobs from processing rolled-back data.
+
+# Idempotency
+- Design jobs so they can run multiple times without side effects:
+  - Use guard clauses to skip work if already done (e.g., `return if Notification.sent?(user_id)`).
+  - Leverage `find_or_create_by` or database unique constraints to avoid duplicate records.
+
+# Argument Simplicity
+- Pass only primitive types to `perform_later` (IDs, strings, simple hashes):
+  ```ruby
+  MyJob.perform_later(user_id: user.id, notify: true)
+  ```
+- Avoid passing large objects or ActiveRecord instances.
+
+# Error Handling & Retries
+- Declare retry and discard policies in job classes:
+  ```ruby
+  class MyJob < ApplicationJob
+    retry_on Net::OpenTimeout, wait: 5.seconds, attempts: 3
+    discard_on ActiveJob::DeserializationError
+  end
+  ```
+- Use `discard_on` for errors that should not be retried.
+
+# Concurrency Controls
+- Solid Queue uses `FOR UPDATE SKIP LOCKED` to enable safe concurrent processing.
+- Tune worker settings in `config/queue.yml`:
+  ```yaml
+  worker_count: 5
+  max_threads: 10
+  queue_order:
+    - default
+    - mailers
+  ```
+
+# Logging & Monitoring
+- Enable verbose enqueue logging:
+  ```ruby
+  # config/environments/production.rb
+  config.active_job.verbose_enqueue_logs = true
+  ```
+- Emit structured logs for job lifecycle:
+  ```ruby
+  Rails.logger.info({ job: self.class.name, args: arguments, jid: job_id }.to_json)
+  ```
+
+# Bulk Enqueuing
+- Batch schedule many jobs in one SQL statement:
+  ```ruby
+  MyJob.perform_all_later(User.pluck(:id))
+  ```
+
+# Job Naming & Queues
+- **Class Naming:** End job class names with `Job` (e.g., `EmailNotificationJob`).
+- **File Location:** Place jobs in `app/jobs/` with snake_case filenames (e.g., `email_notification_job.rb`).
+- **Queue Assignment:** Use `queue_as :queue_name` to assign jobs to logical queues (e.g., `:mailers`, `:default`, `:high_priority`). Configure queue names in `config/queue.yml` to match your workers.
+
+# Timeouts & Throttling
+- **Timeouts:** Set `timeout` in `default_job_options` or per-job using:
+  ```ruby
+  class MyJob < ApplicationJob
+    self.default_job_options = { timeout: 5.minutes }
+  end
+  ```
+- **Throttling:** Use `around_perform` to limit execution rate or chunk large workloads:
+  ```ruby
+  around_perform do |job, block|
+    throttle(rate: 100, period: 1.minute) { block.call }
+  end
+  ```
+
+# Observability & Instrumentation
+- **Instrumentation:** Wrap `perform` in `ActiveSupport::Notifications`:
+  ```ruby
+  ActiveSupport::Notifications.instrument('perform.my_job', job: self.class.name, args: arguments) do
+    super
+  end
+  ```
+- **Metrics:** Emit metrics (duration, success/failure) to your monitoring system after job completion.
+
+# Dead Letter Handling
+- **Permanent Failures:** Use `discard_on` for exceptions that should not retry.
+- **Dead Letter Queue:** For irrecoverable errors, explicitly `perform_later` to a `DeadLetterJob` or notify an external service.
+
+# Recurring & Scheduled Jobs
+- Define periodic tasks in `config/recurring.yml`:
+  ```yaml
+  cleanup_expired_tokens:
+    cron: '0 0 * * *'
+    job: CleanupExpiredTokensJob
+  ```
+- Leverage Solid Queue's scheduler to dispatch recurring jobs without external cron.
+
+# Bulk Enqueuing
+- Batch schedule many jobs in one SQL statement:
+  ```ruby
+  MyJob.perform_all_later(User.pluck(:id))
+  ```
+
+# Testing
+- In test setup, use the test adapter:
+  ```ruby
+  # test/test_helper.rb
+  ActiveJob::Base.queue_adapter = :test
+  ```
+- Use helpers to assert enqueue behavior and perform jobs:
+  ```ruby
+  assert_enqueued_with(job: MyJob, args: [user_id: user.id])
+  perform_enqueued_jobs { SomeService.call(...) }
+  ```
+- Stub external calls to keep tests fast and isolated.
+
