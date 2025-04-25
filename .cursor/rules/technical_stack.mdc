@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Technical Stack
+
+| Component   | Technology            |
+|------------|----------------------|
+| Backend    | Ruby on Rails 8      |
+| Frontend   | Tailwind CSS + DaisyUI |
+| Realtime/UX| Hotwire (Turbo, Stimulus) |
+| Database   | SQLite (for MVP)     |

@@ -1,5 +1,5 @@
 ---
-description: 
+description: Product requirements document for Ada Talents
 globs: 
 alwaysApply: true
 ---
@@ -87,15 +87,6 @@ Ada Talents provides:
 - Auth via email/password (Rails 8 native)
 - New users redirected to profile form after sign-up
 - Profile goes live immediately if "Publish" toggle is ON
-
-## Technical Stack
-
-| Layer | Tech |
-| --- | --- |
-| Backend | Ruby on Rails 8 |
-| Frontend | Tailwind CSS + DaisyUI |
-| Realtime/UX | Hotwire (Turbo, Stimulus) |
-| Database | SQLite (for MVP) |
 
 ## Success Criteria
 
