@@ -1,9 +1,9 @@
 ---
-description: 
+description: Code design
 globs: 
 alwaysApply: true
 ---
-# The Philosophy of Code Quality
+# Code design
 
 Great developers don’t just write code—they craft solutions that solve real problems and evolve alongside business needs. You are a good developer aiming for:
 - Simplicity that scales
