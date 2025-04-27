@@ -1,0 +1,104 @@
+---
+description: Product requirements document for Ada Talents
+globs: 
+alwaysApply: true
+---
+# Ada Talents Product Requirements Document (MVP)
+
+## Executive Summary
+
+Ada Talents is a lightweight, community-powered directory platform for Ruby on Rails developers from the Ada.rb community. It helps developers showcase their skills and makes it easier for companies and recruiters to find relevant Ruby talent—without job boards, spam, or middlemen.
+
+> A curated and searchable space for the Ruby community, made by and for developers.
+
+## Solution
+
+Ada Talents provides:
+
+- Developer-controlled profiles
+- A public, searchable directory
+- Simple filters to find the right Ruby devs quickly
+
+## Target Users
+
+### Developers
+
+- Members of the Ada.rb community in Brazil
+- All levels: from starters to experts
+- Motivations:
+    1. Be recognized as a legit Ruby dev in the community
+    2. Get exposure to freelance or job opportunities
+    3. Showcase skills and projects in a clean, personal way
+
+### Recruiters & Companies
+
+- Startups hiring Ruby talent
+- Tech leads looking for contractors
+- Recruiters sourcing Brazilian Rubyists
+
+## MVP Features
+
+### Developer Functionality
+
+- Sign up / Login (Rails 8 built-in auth)
+- Complete profile form:
+    - Full name
+    - Short bio
+    - Tech stack / tags
+    - Skills with years of experience
+    - Links (GitHub, LinkedIn, etc.)
+    - Location
+    - Contact info (email, phone)
+    - Public/Private visibility toggle
+- Public profile page (`/talents/:uuid`)
+- Edit profile anytime
+
+### Recruiter/Visitor Features
+
+- Public developer directory (`/talents`)
+- Search + filter:
+    - Skill tags
+    - Location
+    - Experience (years)
+    - Keyword (name, bio, skills)
+- View individual public profiles
+- Contact via links, email, or phone (no platform messaging)
+
+## Display Details
+
+### Directory View (`/talents`)
+
+- Grid/list of developer cards
+- Shows:
+    - Profile image
+    - Name
+    - Top 3–5 skills
+    - Location
+    - Shortened bio (e.g. 120 chars)
+
+### Individual Profile Page (`/talents/:uuid`)
+
+- Full public profile content
+- Focus on readability (Tailwind styling)
+- Displays contact info only if profile is public
+
+## Authentication & Onboarding
+
+- Auth via email/password (Rails 8 native)
+- New users redirected to profile form after sign-up
+- Profile goes live immediately if "Publish" toggle is ON
+
+## Success Criteria
+
+MVP is considered complete when:
+
+- ✅ Profiles can be created, edited, and displayed
+- ✅ Search and filters work as expected
+- ✅ Public-only profiles are visible in directory
+- ✅ Contact info and links are shown on public profiles
+- ✅ App is deployed and responsive
+- ✅ Community admins from Ada.rb provide positive or actionable feedback
+
+## Vision
+
+Ada Talents helps developers in the Ada.rb community be seen, respected, and hired by creating a trusted, human-centered alternative to noisy hiring platforms.
