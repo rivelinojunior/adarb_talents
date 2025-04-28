@@ -66,7 +66,7 @@ $ bin/dev
 - Public profile pages with contact info (if public)
 - Authentication via email/password (Rails 8 native)
 
-## MVP Workflow ([see diagram](https://www.mermaidchart.com/raw/b1633ac0-9ffc-474b-8d74-549f4ab43cca?theme=light&version=v0.1&format=svg))
+## MVP Workflow
 
 ```mermaid
 ---
