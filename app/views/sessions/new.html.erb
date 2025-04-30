@@ -1,0 +1,24 @@
+<%= form_with url: session_path, class: "w-full mt-3" do |form| %>
+  <h1 class="text-xl">Login</h1>
+  <div class="mt-2">
+    <label for="email_address">Enter your e-mail</label>
+    <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "example.email@example.com", value: params[:email_address], class: "input w-full mt-1" %><br>
+    <%= turbo_frame_tag "email_address_errors" %>
+  </div>
+
+  <div class="mt-3">
+    <label for="password">Enter your password</label>
+    <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "********", maxlength: 72, class: "input w-full mt-1" %><br>
+    <%= turbo_frame_tag "password_errors" %>
+  </div>
+  
+  <div id="buttonsWrapper">
+    <%= form.submit "Sign in", class: "btn btn-primary w-14/30", data: {turbo_frame: "_top"} %>
+    <%= link_to "Forgot my password", new_password_path, class: "btn btn-accent w-14/30" %>
+  </div>
+
+  <div class="flex flex-col w-full mt-3">
+    <h2 class="text-xl">Did not have an account? Not a problem!</h2>
+    <%= link_to "Sign up", registration_index_path, class: "btn btn-info w-full mt-2" %>
+  </div>
+<% end %>
