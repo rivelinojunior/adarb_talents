@@ -1,0 +1,126 @@
+---
+description: Git rules
+globs: 
+alwaysApply: true
+---
+name: conventional_commits
+
+actions:
+  - type: execute
+    command: |
+      # Extract the change type and scope from the changes
+      CHANGE_TYPE=""
+      case "$CHANGE_DESCRIPTION" in
+        *"add"*|*"create"*|*"implement"*) CHANGE_TYPE="feat";;
+        *"fix"*|*"correct"*|*"resolve"*) CHANGE_TYPE="fix";;
+        *"refactor"*|*"restructure"*) CHANGE_TYPE="refactor";;
+        *"test"*) CHANGE_TYPE="test";;
+        *"doc"*|*"comment"*) CHANGE_TYPE="docs";;
+        *"style"*|*"format"*) CHANGE_TYPE="style";;
+        *"perf"*|*"optimize"*) CHANGE_TYPE="perf";;
+        *) CHANGE_TYPE="chore";;
+      esac
+
+      # Extract scope from file path
+      SCOPE=$(dirname "$FILE" | tr '/' '-')
+
+      # Commit the changes
+      git add "$FILE"
+      git commit -m "$CHANGE_TYPE($SCOPE): $CHANGE_DESCRIPTION"
+
+  - type: suggest
+    message: |
+      Changes should be committed using conventional commits format:
+
+      Format: <type>(<scope>): <description>
+
+      Types:
+      - feat: A new feature
+      - fix: A bug fix
+      - docs: Documentation only changes
+      - style: Changes that do not affect the meaning of the code
+      - refactor: A code change that neither fixes a bug nor adds a feature
+      - perf: A code change that improves performance
+      - test: Adding missing tests or correcting existing tests
+      - chore: Changes to the build process or auxiliary tools
+
+      The scope should be derived from the file path or affected component.
+      The description should be clear and concise, written in imperative mood.
+
+### Git Commit Messages
+
+GIT_COMMIT_FORMAT: >
+  type(scope): subject
+
+  - type: feat, fix, docs, style, refactor, test, chore
+  - scope: model, controller, migration, etc.
+  - subject: clear, concise description
+
+examples:
+  - input: |
+      # After adding a new function
+      CHANGE_DESCRIPTION="add user authentication function"
+      FILE="src/auth/login.ts"
+    output: "feat(src-auth): add user authentication function"
+
+  - input: |
+      # After fixing a bug
+      CHANGE_DESCRIPTION="fix incorrect date parsing"
+      FILE="lib/utils/date.js"
+    output: "fix(lib-utils): fix incorrect date parsing"
+
+## Pull Request Description
+<!-- Provide a clear, concise description of the changes -->
+
+## Changes Overview
+```mermaid
+graph TD
+    A[Current State] --> B[Changes Made]
+    B --> C[End State]
+    
+    %% Add relevant nodes and connections to illustrate your changes
+    %% Example:
+    %% A --> D[New Feature]
+    %% D --> C
+```
+
+## Type of Change
+- [ ] Bug fix (non-breaking change that fixes an issue)
+- [ ] New feature (non-breaking change that adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+- [ ] Refactoring
+- [ ] Performance improvement
+
+## Testing
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+
+## Documentation
+- [ ] API documentation updated
+- [ ] README updated
+- [ ] Architecture diagrams updated
+
+## Dependencies
+<!-- List any new dependencies or removed dependencies -->
+
+## Migration Steps
+<!-- If applicable, list any migration steps needed -->
+
+## Screenshots/Videos
+<!-- If applicable, add screenshots or videos to demonstrate the changes -->
+
+## Related Issues
+<!-- Link to related issues using #issue_number -->
+
+## Deployment Notes
+<!-- Any special deployment considerations? -->
+
+## Checklist
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex logic
+- [ ] Test coverage maintained/improved
+- [ ] No new security vulnerabilities introduced
+- [ ] Performance impact considered
+- [ ] Mermaid diagram accurately reflects changes
