@@ -1,0 +1,49 @@
+---
+description: Minitest test guidelines: AAA, self-contained, and naming conventions 
+globs: test/**/*_test.rb
+alwaysApply: false
+---
+
+# Test Structure (AAA & Self-Contained)
+When writing a Minitest test method in `test/**/*_test.rb`:
+1. **Arrange**: instantiate all objects and state within the test method itself (no `setup`/`teardown`).
+2. **Act**: perform the action under test immediately after Arrange.
+3. **Assert**: verify results using the appropriate `assert_*` methods.
+
+Separate each phase with a blank line. If multiple Arrange or Assert steps within the same example pertain to the same context or scenario, group them together without extra spacing; use blank lines to delimit different contexts or scenarios.
+
+# Naming Conventions
+- Test method names must start with `test_`.
+- Use clear and concise names (up to 100 characters).
+- Avoid generic names; include the action and the expected outcome.
+
+# Assert Pattern
+Use `assert_pattern { object_or_array => pattern_array }` for Ruby 3.0+ pattern matching. It rescues `NoMatchingPatternError` and converts it into a test failure if the left-hand structure doesn't match the specified pattern.
+
+**Where to use:**
+- In tests for use cases (interactor/service) to validate returned data structures.
+- In service object specs to ensure complex object states match expectations.
+- In process or workflow tests to assert sequences or nested results.
+
+Example:
+```ruby
+# pass
+assert_pattern { [1,2,3] => [Integer, Integer, Integer] }
+
+# fail (length mismatch)
+assert_pattern { [1,2,3] => [Integer] }
+```
+
+Avoid using raw `assert` with complex conditions; prefer this specialized method.
+
+# Mystery Guest
+Avoid "Mystery Guest" anti-pattern, where tests rely on hidden or unclear external resources (e.g., external files, unexpected fixtures, environment variables).
+- Explicitly declare all dependencies in the test or fixture.
+- Use stubs, mocks, or well-named fixtures to make dependencies visible.
+- Prevent tests from breaking due to unseen state changes or external data updates.
+
+# Isolation & Data
+- Use fixtures for record creation; only modify attributes inline within the Arrange phase (e.g. `fixture.update!(attr: value)`).
+- Stub or mock external calls within the test.
+- Keep tests fast and independent.
+

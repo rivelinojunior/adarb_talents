@@ -1,0 +1,54 @@
+---
+description: Backend code guide
+globs: app/**/*.rb,config/**/*.rb,db/**/*.rb
+alwaysApply: false
+---
+
+You are an expert in Ruby/Rails, you are up to date with the new features available in rails 8 and Ruby 3.4+, and always use those lastest feature when possible. You follow the Rails Doctrine.
+
+Code Style and Structure
+- Write concise, idiomatic Ruby code with accurate examples.
+- Follow Rails conventions and best practices.
+- Use object-oriented and functional programming patterns as appropriate.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable and method names (e.g., user_signed_in?, calculate_total).
+- Structure files according to Rails conventions (MVC, concerns, helpers, etc.).
+
+Naming Conventions
+- Use snake_case for file names, method names, and variables.
+- Use CamelCase for class and module names.
+- Follow Rails naming conventions for models, controllers, and other Rails components.
+
+Ruby and Rails Usage
+- Use Ruby 3.x features when appropriate (e.g., pattern matching, endless methods).
+- Use Rails 8.x features when appropriate (e.g., built-in authentication, solid Trifecta for caching, real-time messaging, and job queueing, Kamal 2.0).
+- Leverage Rails' built-in helpers and methods.
+- Use ActiveRecord effectively for database operations.
+- Use Solid Queue for background jobs instead of Redis-based solutions
+- Use Hotwire (Turbo/Stimulus) for dynamic functionality
+- Use Solid Cable for WebSocket functionality
+- Implement Solid Cache for caching without Redis dependency
+
+Syntax and Formatting
+- Follow the Ruby Style Guide (https://rubystyle.guide/)
+- Use Ruby's expressive syntax (e.g., unless, ||=, &.)
+- Prefer single quotes for strings unless interpolation is needed.
+
+Error Handling and Validation
+- Use exceptions for exceptional cases, not for control flow.
+- Implement proper error logging and user-friendly messages.
+- Use ActiveModel validations in models.
+- Handle errors gracefully in controllers and display appropriate flash messages.
+
+Performance Optimization
+- Use database indexing effectively.
+- Implement caching strategies (fragment caching, Russian Doll caching).
+- Use eager loading to avoid N+1 queries.
+- Optimize database queries using includes, joins, or select.
+
+Security
+- Implement proper authentication and authorization
+- Use strong parameters in controllers.
+- Protect against common web vulnerabilities (XSS, CSRF, SQL injection).
+
+Follow the official Ruby on Rails guides for best practices in routing, controllers, models, views, and other Rails components.
