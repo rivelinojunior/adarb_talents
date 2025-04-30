@@ -1,0 +1,18 @@
+<%= render "layouts/application" do %>
+  <div class="flex justify-center p-3">
+    <div class="flex justify-center w-full md:w-3xl">
+      <div class="flex flex-col w-[29rem]">
+        <%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
+        <%= tag.div(flash[:notice], style: "color:green") if flash[:notice] %>
+
+        <h1 class="text-xl jetbrains-mono">
+          <span class="text-4xl">ADa.rb Talents</span> <br>
+          Connecting Ruby/Rails Developers to Opportunities
+        </h1>
+
+        <%= yield %>
+      </div>
+    </div>
+  </div>
+<% end %>
+

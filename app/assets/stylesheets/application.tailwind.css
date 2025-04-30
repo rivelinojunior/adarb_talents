@@ -1,3 +1,37 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
+html, body {
+  @apply w-full h-full;
+  font-family: "JetBrains Mono", monospace;
+}
+
+@theme {
+  --animate-bounce-slowed: bounce 2s infinite;
+
+  @keyframes bounce_slowed {
+    0%, 100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: none;
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+}
+
+.jetbrains-mono {
+  font-family: "JetBrains Mono", monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+#buttonsWrapper {
+  @apply flex h-[70px] w-full justify-between mt-3 sm:h-auto;
+}
+
+#buttonsWrapper > .btn {
+  @apply h-3/4 sm:h-auto sm:p-2;
+}
