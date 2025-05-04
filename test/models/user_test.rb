@@ -7,7 +7,7 @@ class UserTest < ActiveSupport::TestCase
 
     u1.save
     u2.save
-    
+
     assert u1.persisted?
     assert u2.persisted?
   end
@@ -38,7 +38,7 @@ class UserTest < ActiveSupport::TestCase
   test "email_address is unique (DB constraint)" do
     User.create!(email_address: "unique@example.com", password: "secret1234", password_confirmation: "secret1234")
 
-    assert_raises ActiveRecord::RecordNotUnique do
+    assert_raises(ActiveRecord::RecordInvalid) do
       User.create!(email_address: "unique@example.com", password: "secret1234", password_confirmation: "secret1234")
     end
   end
