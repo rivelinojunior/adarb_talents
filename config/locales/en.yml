@@ -1,6 +1,6 @@
 en:
   hello: "Hello world"
-  models: 
+  models:
     user:
       email: Email
       password: Password

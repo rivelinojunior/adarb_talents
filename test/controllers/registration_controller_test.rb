@@ -4,7 +4,7 @@ class RegistrationControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get registration_index_path
     assert_response :success
-    assert_select "form" 
+    assert_select "form"
   end
 
   test "should create user with valid parameters" do
@@ -30,7 +30,7 @@ class RegistrationControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_response :not_acceptable 
+    assert_response :not_acceptable
     assert flash[:errors].present?
   end
 end

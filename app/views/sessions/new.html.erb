@@ -11,7 +11,7 @@
     <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "********", maxlength: 72, class: "input w-full mt-1" %><br>
     <%= turbo_frame_tag "password_errors" %>
   </div>
-  
+
   <div id="buttonsWrapper">
     <%= form.submit "Sign in", class: "btn btn-primary w-14/30", data: {turbo_frame: "_top"} %>
     <%= link_to "Forgot my password", new_password_path, class: "btn btn-accent w-14/30" %>
