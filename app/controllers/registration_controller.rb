@@ -1,9 +1,9 @@
 class RegistrationController < ApplicationController
-  allow_unauthenticated_access only: %i[ index create ]
+  allow_unauthenticated_access only: %i[ new create ]
 
   layout "authentication"
 
-  def index; end
+  def new; end
 
   def create
     respond_to do |format|

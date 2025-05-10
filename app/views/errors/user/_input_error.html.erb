@@ -1,8 +1,8 @@
 <span class="text-red-400">
-  <% if err_obj[:errors].size == 1  %>
-    <%= t("models.user.#{err_obj[:attr].to_s}") + " #{err_obj[:errors].first}" %>
-  <% elsif err_obj[:errors].size > 1 %>
-    <% name = t("models.user.#{err_obj[:attr].to_s}") %>
-    <%= err_obj[:errors].map { |err| "#{name} #{err}." }.join(' <br> ').html_safe %>
+  <% if error[:errors].size == 1  %>
+    <%= t("models.user.#{error[:attr].to_s}") + " #{error[:errors].first}" %>
+  <% elsif error[:errors].size > 1 %>
+    <% name = t("models.user.#{error[:attr].to_s}") %>
+    <%= error[:errors].map { |err| "#{name} #{err}." }.join(' <br> ').html_safe %>
   <% end %>
 </span>

@@ -3,8 +3,8 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
 
   namespace :registration do
-    get "/", to:       "index", as: :index
-    post "create", to: "create", as: :create
+    get "/new",     to: "new",    as: :new
+    post "/create", to: "create", as: :create
   end
 
   get "/", to: "home#index", as: :home_index

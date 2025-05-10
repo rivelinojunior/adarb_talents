@@ -1,8 +1,8 @@
 require "test_helper"
 
 class RegistrationControllerTest < ActionDispatch::IntegrationTest
-  test "should get index" do
-    get registration_index_path
+  test "should render the registration form" do
+    get registration_new_path
     assert_response :success
     assert_select "form"
   end
