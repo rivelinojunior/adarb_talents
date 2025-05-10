@@ -1,0 +1,17 @@
+<h1 class="text-xl">Update your password</h1>
+
+<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
+
+<%= form_with url: password_path(params[:token]), method: :put do |form| %>
+  <div class="mt-2">
+    <%= form.password_field :password, required: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72, class: "input w-full mt-3" %><br>
+    <%= turbo_frame_tag "password_errors" %>
+  </div>
+
+  <div class="mt-3">
+    <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72, class: "input w-full mt-3" %><br>
+    <%= turbo_frame_tag "password_confirmation_errors" %>
+  </div>
+
+  <%= form.submit "Save", class: "btn btn-primary w-full mt-3" %>
+<% end %>
