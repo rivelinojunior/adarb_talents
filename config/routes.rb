@@ -2,10 +2,7 @@ Rails.application.routes.draw do
   resource  :session
   resources :passwords, param: :token
 
-  namespace :registration do
-    get "/new",     to: "new",    as: :new
-    post "/create", to: "create", as: :create
-  end
+  resource :registration, only: %i[ new create ]
 
   get "/", to: "home#index", as: :home_index
 

@@ -1,4 +1,4 @@
-class RegistrationController < ApplicationController
+class RegistrationsController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
 
   layout "authentication"

@@ -2,6 +2,12 @@
 @plugin "daisyui";
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
+:root {
+  --color-primary: #A52E57;
+  --color-accent: #D46A92;
+  --color-info: #F5B041;
+}
+
 html, body {
   @apply w-full h-full;
   font-family: "JetBrains Mono", monospace;

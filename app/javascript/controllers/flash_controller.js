@@ -3,10 +3,12 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ['message']
 
-  // Remove flash alerts before 10 seconds.
   connect() {
+    let timeToHideInSeconds = 10_000
+
     setTimeout(() => {
+      console.log('rempver')
       this.messageTarget.remove()
-    }, 10 * 1000)
+    }, timeToHideInSeconds)
   }
 }

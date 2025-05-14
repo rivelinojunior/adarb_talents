@@ -2,13 +2,13 @@ require "test_helper"
 
 class RegistrationControllerTest < ActionDispatch::IntegrationTest
   test "should render the registration form" do
-    get registration_new_path
+    get new_registration_path
     assert_response :success
     assert_select "form"
   end
 
   test "should create user with valid parameters" do
-    post registration_create_path, params: {
+    post registration_path, params: {
       user: {
         email_address: "test@example.com",
         password: "password123",
@@ -22,7 +22,7 @@ class RegistrationControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not create user with invalid parameters" do
-    post registration_create_path, params: {
+    post registration_path, params: {
       user: {
         email_address: "invalid-email",
         password: "123",

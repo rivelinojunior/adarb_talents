@@ -14,10 +14,14 @@ class PasswordsController < ApplicationController
         flash[:success] = "You will receive an e-mail to reset your password soon."
 
         format.html { redirect_to new_session_path }
-      else
-        flash[:errors] = @user.errors.as_json
+      elsif user.present? && user.errors.size.positive?
+        flash[:errors] = user.errors.as_json
 
         format.turbo_stream { render turbo_stream }
+      else
+        flash[:warn] = "An user with that e-mail is not registered."
+
+        format.turbo_stream { redirect_to new_session_path }
       end
     end
   end
