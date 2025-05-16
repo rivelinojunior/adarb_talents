@@ -1,0 +1,3 @@
+<% flash[:errors]&.each do |attr_name, errors| %>
+  <%= turbo_stream.update "#{attr_name}_errors", partial: "errors/user/input_error", locals: { error: { attr: attr_name, errors: errors } } %>
+<% end %>
