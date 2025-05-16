@@ -9,7 +9,7 @@ class PasswordsController < ApplicationController
   def create
     respond_to do |format|
       if user = User.find_by(email_address: params[:email_address])
-        # PasswordsMailer.reset(user).deliver_later
+        PasswordsMailer.reset(user).deliver_later
 
         flash[:success] = "You will receive an e-mail to reset your password soon."
 
