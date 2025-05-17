@@ -1,5 +1,5 @@
 class PasswordsMailer < ApplicationMailer
-  default reply_to: 'Ada Talents <guisousa.inacio@gmail.com>'
+  default reply_to: "Ada Talents <guisousa.inacio@gmail.com>"
 
   def reset(user)
     @user = user
