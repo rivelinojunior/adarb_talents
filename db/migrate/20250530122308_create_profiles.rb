@@ -9,7 +9,7 @@ class CreateProfiles < ActiveRecord::Migration[8.0]
       t.string :phone_number
       t.string :location
       t.json :skills, null: false
-      t.boolean :public, default: false
+      t.boolean :published, default: false
 
       t.timestamps
     end

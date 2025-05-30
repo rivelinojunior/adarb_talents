@@ -20,7 +20,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_30_122308) do
     t.string "phone_number"
     t.string "location"
     t.json "skills", null: false
-    t.boolean "public", default: false
+    t.boolean "published", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_profiles_on_user_id"

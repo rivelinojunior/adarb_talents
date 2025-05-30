@@ -9,7 +9,7 @@ one:
   phone_number: "+1 (555) 123-4567"
   location: "San Francisco, CA"
   skills: [{name: 'Ruby', experience_in_year: 5}, {name: 'Rails', experience_in_year: 4}, {name: 'React', experience_in_year: 3}, {name: 'PostgreSQL', experience_in_year: 4}, {name: 'AWS', experience_in_year: 2}]
-  public: true
+  published: true
 
 two:
   fullname: Jane Smith
@@ -20,4 +20,4 @@ two:
   phone_number: "+1 (555) 987-6543"
   location: "New York, NY"
   skills: [{name: 'Product Strategy', experience_in_year: 8}, {name: 'Agile', experience_in_year: 6}, {name: 'User Research', experience_in_year: 5}, {name: 'Data Analysis', experience_in_year: 4}]
-  public: true
+  published: true
