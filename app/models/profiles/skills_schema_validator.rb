@@ -12,7 +12,10 @@ module Profiles
     private
 
     def schema_valid?(skill)
-      skill.is_a?(Hash) && skill["name"].present? && skill["experience_in_year"].is_a?(Integer)
+      skill.is_a?(Hash) && 
+        skill["name"].present? && 
+        skill["experience_in_year"].is_a?(Integer) &&
+        skill["experience_in_year"] >= 0
     end
   end
 end

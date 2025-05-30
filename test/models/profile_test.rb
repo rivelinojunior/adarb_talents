@@ -85,4 +85,10 @@ class ProfileTest < ActiveSupport::TestCase
     assert_not @profile.valid?
     assert_includes @profile.errors[:skills], "is invalid"
   end
+
+  test "should validate skills schema when experience_in_year is negative" do
+    @profile.skills = [ { name: "Ruby", experience_in_year: -1 } ]
+    assert_not @profile.valid?
+    assert_includes @profile.errors[:skills], "is invalid"
+  end
 end
