@@ -14,10 +14,6 @@ class PasswordsController < ApplicationController
         flash[:success] = "You will receive an e-mail to reset your password soon."
 
         format.html { redirect_to new_session_path }
-      elsif user.present? && user.errors.size.positive?
-        flash[:errors] = user.errors.as_json
-
-        format.turbo_stream { render turbo_stream }
       else
         flash[:warn] = "An user with that e-mail is not registered."
 
@@ -33,7 +29,7 @@ class PasswordsController < ApplicationController
       if @user.update(params.permit(:password, :password_confirmation))
         flash[:success] = "Password has been redefined."
 
-        format.turbo_stream { render turbo_stream: turbo_stream.update("alert", partial: "errors/flash/alert", locals: { flash: flash }) }
+        format.html { redirect_to new_session_path }
       else
         flash[:errors] = @user.errors.as_json
 
