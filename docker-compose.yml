@@ -1,0 +1,30 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - SMTP_ADDRESS=mailhog
+      - SMTP_PORT=1025
+      - RAILS_ENV=development
+      - BUNDLE_WITHOUT="" # Ensure development gems are installed
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+      - sqlite_data:/rails/db
+    stdin_open: true
+    tty: true
+    command: ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "80"]
+    depends_on:
+      - mailhog
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI port
+
+volumes:
+  sqlite_data:
+  bundle_cache:
