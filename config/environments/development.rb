@@ -39,7 +39,10 @@ Rails.application.configure do
     },
     port: ENV.fetch("SMTP_PORT") { 1025 }.to_i
   }
-  config.action_mailer.raise_delivery_errors = true # Recomendado para desarrollo para ver errores
+  config.action_mailer.raise_delivery_errors = true # Recommended for development to see errors
+
+  # Default URL options for Action Mailer (important for links in emails)
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false

@@ -7,6 +7,7 @@ services:
       - SMTP_ADDRESS=mailhog
       - SMTP_PORT=1025
       - RAILS_ENV=development
+      - BUNDLE_WITHOUT="" # Ensure development gems are installed
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
     volumes:
       - .:/rails
